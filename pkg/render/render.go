@@ -7,28 +7,32 @@ import (
 	"net/http"
 	"path/filepath"
 	"text/template"
+
+	"github.com/mikemando/go-go/pkg/config"
 )
 
 var functions = template.FuncMap{}
 
-func RenderTemplate(rw http.ResponseWriter, tmpl string) {
-	tc, err := CreateTemplateCache()
+var app *config.AppConfig
 
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
+func RenderTemplate(rw http.ResponseWriter, tmpl string) {
+	tc := app.TemplateCache
 
 	t, ok := tc[tmpl]
 
 	if !ok {
-		log.Fatal((err))
+		log.Fatal(("could not get template from template cache"))
 	}
 
 	buf := new(bytes.Buffer)
 
 	_ = t.Execute(buf, nil)
 
-	_, err = buf.WriteTo(rw)
+	_, err := buf.WriteTo(rw)
 
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
