@@ -1,7 +1,9 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -10,17 +12,30 @@ import (
 var functions = template.FuncMap{}
 
 func RenderTemplate(rw http.ResponseWriter, tmpl string) {
-	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
-
-	err := parsedTemplate.Execute(rw, nil)
+	tc, err := CreateTemplateCache()
 
 	if err != nil {
-		fmt.Println("error parsing template:", err)
-		return
+		log.Fatal(err)
+	}
+
+	t, ok := tc[tmpl]
+
+	if !ok {
+		log.Fatal((err))
+	}
+
+	buf := new(bytes.Buffer)
+
+	_ = t.Execute(buf, nil)
+
+	_, err = buf.WriteTo(rw)
+
+	if err != nil {
+		fmt.Println("Error writing template to browser", err)
 	}
 }
 
-func RenderTemplateTest(rw http.ResponseWriter, tmpl string) (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 
