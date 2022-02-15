@@ -22,17 +22,17 @@ func NewRepo(a *config.AppConfig) *Repository {
 	}
 }
 
-// NewHandlers sets the repository for the handlers
+// NewHandlers sets the repository for the handlers/
 func NewHandlers(r *Repository) {
 	Repo = r
 }
 
 // Home is the home page handler
-func Home(rw http.ResponseWriter, r *http.Request) {
+func (m *Repository) Home(rw http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(rw, "home.page.html")
 }
 
 // About is the about page handler
-func About(rw http.ResponseWriter, r *http.Request) {
+func (m *Repository) About(rw http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(rw, "about.page.html")
 }
